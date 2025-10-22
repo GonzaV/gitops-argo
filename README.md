@@ -13,7 +13,7 @@ Este repositorio contiene la documentación y manifiestos básicos para probar d
 
 ## Conocimientos teóricos necesarios
 
-TBC
+Antes de empezar, es recomendable leer la [introducción a GitOps](/docs/gitops.md)
 
 ## Herramientas necesarias
 
