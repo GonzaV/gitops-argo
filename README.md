@@ -48,6 +48,38 @@ Si todos responden sin errores, está todo listo para comenzar.
     
 ## Paso a paso
 
-### Sincronización básica de una Aplicación
+### Instalación y preparación de Argo CD
 
-TBC
+// TODO mejoras: asegurarnos de estar trabajando en el cluster local con kubectl config get-contexts
+
+Como primer paso, es necesario crear el namespace `argocd` y aplicar en el los recursos y servicios de Argo.
+
+Para eso ejecutamos en una consola:
+
+```bash
+kubectl create namespace argocd
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
+```
+
+Kubectl va a listarnos los recursos nativos de Kubernetes que aplico bajo el namespace `argocd` que creamos.
+
+Confirmamos que los pods de Argo estan corriendo:
+
+```bash
+kubectl get pods -n argocd 
+```
+![argo-cd-pods](./docs/images/argo-pods.png)
+
+Con Argo levantado, lo siguiente es exponer su API y UI. No existe una única forma de hacer esto, pero la más sencilla, sin aplicar otras configuraciones ni recursos de k8s, es exponer el `service argocd-server` con el comando `port-forward`.
+
+En una **nueva instancia de nuestra consola** corremos el siguiente comando:
+
+```bash
+kubectl port-forward svc/argocd-server -n argocd 8080:443
+```
+
+Es importante hacerlo en una nueva consola ya que este proceso es continuo y no nos va a permitir ejecutar otros comandos.
+
+Si todo salió bien, ya es posible ingresar a la UI en http://localhost:8080 con cualquier navegador.
+
+![argo-login](./docs/images/argo-login.png)
