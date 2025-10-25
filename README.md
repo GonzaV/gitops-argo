@@ -108,15 +108,25 @@ En este mismo repositorio se encuentra el archivo [nginx-app.yml](./apps/nginx-a
   kubectl apply -f nginx-app.yaml
 ```
 
+!!! note Configuración de la fuente
+    La fuente de verdad para esta aplicación se describe bajo los campos`.spec.source.targetRevision` y `.spec.source.repoURL`. Modificarlos de ser necesario.
+
 Esto va a ser inmediatamente reflejado en la UI de Argo, pero nos vamos a encontrar con que su estado no es correcto:
 - App Health: Missing
 - Sync Status: OutOfSync
 
-![argo-missing](./docs/images/)
+![argo-missing](./docs/images/argo-missing.png)
+
+!!! note Nota
+    El estado de una aplicación es igual al estado más severo de cualquiera de sus recursos hijos directos. En este caso la aplicación podría pasar de "Missing" a "Degraded" si k8s cambia el estado de algun recurso por uno erroneo.
 
 Esto nos esta indicando que algo salio mal, y es una de las mayores virtudes de esta herramienta. Les da, a todos los desarrolladores, una respuesta inmediata del cambio que hicieron y la información suficiente para detectar errores y corregirlos directamente desde el repositorio.
 
 En este caso, el [configmap.yml](/manifests/nginx/configmap.yml) tiene un valor erroneo en `.metadata.namespace`. El valor correcto es `nginx-demo`, ya que es el namespace donde estamos aplicando nuestro [deployment.yml](/manifests/nginx/deployment.yml) y donde espera encontrar el configmap que este mismo esta intentando utilizar.
 
 #### Sincronización
+
+El siguiente paso es corregir nuestros manifiestos en el repositorio para que puedan ser aplicados en el cluster y asi lograr que, tanto lo declarado en nuestra SSOT como lo que existe en el cluster, este sincronizado.
+
+En nuestro fichero [configmap.yml](/manifests/nginx/configmap.yml) modificamos el valor del campo `.metadata.namespace` por el mismo que utilizan los otros recursos de nuestro servicio, `nginx-demo`.
 
