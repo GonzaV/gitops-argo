@@ -101,7 +101,7 @@ Estas son las credenciales que vamos a usar para ingresar a la UI expuesta en lo
 
 En este punto, nuestro cluster de Kubernetes está corriendo de forma local, Argo CD está deployado en ese ambiente y su UI accesible en localhost:8080. Es momento de crear una `Aplicación`.
 
-Las aplicaciones de Argo son la representación de nuestros servicios deployados o por deplyoar y brindan, entre otras cosas, dos piezas centrales de información: la fuente o referencia al estado deseado (nuestro repositorio) y el cluster destino.
+Las aplicaciones de Argo son la representación de nuestros servicios deployados o por deployar y brindan, entre otras cosas, dos piezas centrales de información: la fuente o referencia al estado deseado (nuestro repositorio) y el cluster destino.
 
 Por simplicidad del ejemplo, vamos a hacer una creación manual haciendo uso del [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) `Application` de Argo.
 
@@ -129,9 +129,11 @@ En este caso, el [configmap.yml](/manifests/nginx/configmap.yml) tiene un valor 
 
 El siguiente paso es corregir nuestros manifiestos en el repositorio para que puedan ser aplicados en el cluster y asi lograr que, tanto lo declarado en nuestra SSOT como lo que existe en el cluster, este sincronizado.
 
-En nuestro fichero [configmap.yml](/manifests/nginx/configmap.yml) modificamos el valor del campo `.metadata.namespace` por el mismo que utilizan los otros recursos de nuestro servicio, `nginx-demo`.
+En nuestro fichero [configmap.yml](/manifests/nginx/configmap.yml) modificamos el valor del campo `.metadata.namespace` por el mismo que utilizan los otros recursos de nuestro servicio:
 
-Nuestra Application está configurada de esta manera:
+`namespace: nginx-demo`
+
+Gracias a que nuestra Application está configurada de esta manera:
 
 ```yaml
 syncPolicy:
@@ -140,7 +142,7 @@ syncPolicy:
     }
 ```
 
-Esto le indica a Argo que debe aplicar las sincronizaciones de manera automática en cuanto detecte una divergencia, y no esperar a que algún usuario lo haga mediante un comando o la interfaz gráfica.
+Argo va a aplicar las sincronizaciones de manera automática en cuanto detecte una divergencia, y no esperar a que algún usuario lo haga mediante un comando o la interfaz gráfica.
 
 Una vez hagamos push de los cambios a nuestro repositorio, la sincronización se va a dar luego de unos minutos (este tiempo es modificable) dejando a nuestro servicio listo.
 
