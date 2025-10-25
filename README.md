@@ -50,7 +50,7 @@ Si todos responden sin errores, está todo listo para comenzar.
 
 ### Instalación y preparación de Argo CD
 
-// TODO mejoras: asegurarnos de estar trabajando en el cluster local con kubectl config get-contexts
+// TODO mejoras: asegurarnos de estar trabajando en el cluster local con kubectl config get-contexts. En "Creación y Sincronización de una Aplicación" se crea manualmente la aplicacion de argo por simplicidad, asegurarse de comentar que hay alternativas, ya que esto tambien requiere permisos que no deberian tener todos los devs.
 
 Como primer paso, es necesario crear el namespace `argocd` y aplicar en el los recursos y servicios de Argo.
 
@@ -83,3 +83,25 @@ Es importante hacerlo en una nueva consola ya que este proceso es continuo y no 
 Si todo salió bien, ya es posible ingresar a la UI en http://localhost:8080 con cualquier navegador.
 
 ![argo-login](./docs/images/argo-login.png)
+
+Argo genera un usuario `admin` con una contraseña inicial que podemos obtener con:
+
+```bash
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d
+```
+
+Estas son las credenciales que vamos a usar para ingresar a la UI expuesta en localhost.
+
+### Creación y Sincronización de una Aplicación
+
+En este punto, nuestro cluster de kunbernetes esta corriendo de forma local, Argo CD esta deployado en ese ambiente y su UI accesible en localhost:8080. Es momento de crear una `Aplicación`.
+
+Las aplicaciones de Argo son la representación de nuestros servicios deployados o por deplyoar y brindan, entre otras cosas, dos piezas centrales de información: la fuente o referencia al estado deseado (nuestro repositorio) y el cluster destino.
+
+Por simplicidad del ejemplo, vamos a hacer una creación manual haciendo uso del [CRD](https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/) `Application` de Argo.
+
+En este mismo repositorio se encuentra el archivo [nginx-app.yml](./apps/nginx-app.yml). Vamos a aplicar el mismo de esta forma desde el directorio en donde se encuentra (o usando un path relativo):
+
+```bash
+  kubectl apply -f nginx-app.yaml
+```
