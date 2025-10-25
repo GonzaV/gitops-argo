@@ -108,8 +108,7 @@ En este mismo repositorio se encuentra el archivo [nginx-app.yml](./apps/nginx-a
   kubectl apply -f nginx-app.yaml
 ```
 
-!!! note Configuración de la fuente
-    La fuente de verdad para esta aplicación se describe bajo los campos`.spec.source.targetRevision` y `.spec.source.repoURL`. Modificarlos de ser necesario.
+> **Nota:** La fuente de verdad para esta aplicación se describe bajo los campos`.spec. source.targetRevision` y `.spec.source.repoURL`. Modificarlos de ser necesario.
 
 Esto va a ser inmediatamente reflejado en la UI de Argo, pero nos vamos a encontrar con que su estado no es correcto:
 - App Health: Missing
@@ -117,8 +116,7 @@ Esto va a ser inmediatamente reflejado en la UI de Argo, pero nos vamos a encont
 
 ![argo-missing](./docs/images/argo-missing.png)
 
-!!! note Nota
-    El estado de una aplicación es igual al estado más severo de cualquiera de sus recursos hijos directos. En este caso la aplicación podría pasar de "Missing" a "Degraded" si k8s cambia el estado de algun recurso por uno erroneo.
+> **Nota:** El estado de una aplicación es igual al estado más severo de cualquiera de sus recursos hijos directos. En este caso la aplicación podría pasar de "Missing" a "Degraded" si k8s cambia el estado de algun recurso por uno erroneo.    
 
 Esto nos esta indicando que algo salio mal, y es una de las mayores virtudes de esta herramienta. Les da, a todos los desarrolladores, una respuesta inmediata del cambio que hicieron y la información suficiente para detectar errores y corregirlos directamente desde el repositorio.
 
