@@ -94,6 +94,8 @@ Estas son las credenciales que vamos a usar para ingresar a la UI expuesta en lo
 
 ### Creación y Sincronización de una Aplicación
 
+#### Creación
+
 En este punto, nuestro cluster de kunbernetes esta corriendo de forma local, Argo CD esta deployado en ese ambiente y su UI accesible en localhost:8080. Es momento de crear una `Aplicación`.
 
 Las aplicaciones de Argo son la representación de nuestros servicios deployados o por deplyoar y brindan, entre otras cosas, dos piezas centrales de información: la fuente o referencia al estado deseado (nuestro repositorio) y el cluster destino.
@@ -105,3 +107,16 @@ En este mismo repositorio se encuentra el archivo [nginx-app.yml](./apps/nginx-a
 ```bash
   kubectl apply -f nginx-app.yaml
 ```
+
+Esto va a ser inmediatamente reflejado en la UI de Argo, pero nos vamos a encontrar con que su estado no es correcto:
+- App Health: Missing
+- Sync Status: OutOfSync
+
+![argo-missing](./docs/images/)
+
+Esto nos esta indicando que algo salio mal, y es una de las mayores virtudes de esta herramienta. Les da, a todos los desarrolladores, una respuesta inmediata del cambio que hicieron y la información suficiente para detectar errores y corregirlos directamente desde el repositorio.
+
+En este caso, el [configmap.yml](/manifests/nginx/configmap.yml) tiene un valor erroneo en `.metadata.namespace`. El valor correcto es `nginx-demo`, ya que es el namespace donde estamos aplicando nuestro [deployment.yml](/manifests/nginx/deployment.yml) y donde espera encontrar el configmap que este mismo esta intentando utilizar.
+
+#### Sincronización
+
