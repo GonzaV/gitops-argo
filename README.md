@@ -9,7 +9,8 @@ Este repositorio contiene la documentación y manifiestos básicos para probar d
 1. [Conocimientos teóricos necesarios](#conocimientos-teóricos-necesarios)
 2. [Herramientas necesarias](#herramientas-necesarias)
 3. Paso a paso 
-   - [Sincronización básica de una Aplicación](#sincronización-básica-de-una-aplicación)
+   - [Instalación y preparación de Argo CD](#instalación-y-preparación-de-argo-cd)
+   - [Creación y Sincronización de una Aplicación](#creación-y-sincronización-de-una-aplicación)
 
 ## Conocimientos teóricos necesarios
 
@@ -19,7 +20,7 @@ Antes de empezar, es recomendable leer la [introducción a GitOps](/docs/gitops.
 
 Para seguir el [paso a paso](#paso-a-paso), se necesita tener instaladas las siguientes herramientas en tu equipo.
 
-> Estas y el restante de las instrucciones estan pensadas para entornos Linux o MacOs. Se asume que se cuenta con Git instalado.
+> Estas y el restante de las instrucciones están pensadas para entornos Linux o MacOs. Se asume que se cuenta con Git instalado.
 
 1. **Docker**
 
@@ -32,17 +33,19 @@ Para seguir el [paso a paso](#paso-a-paso), se necesita tener instaladas las sig
 
 3. **Kubectl**
 
-    [Kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) es el cliente oficial de Kubernetes. Será neceario para aplicar cambios manuales en el cluster.
+    [Kubectl](https://kubernetes.io/docs/tasks/tools/#kubectl) es el cliente oficial de Kubernetes. Será necesario para aplicar cambios manuales en el cluster.
 
 ### Verificación rápida
 
 Abrir una terminal y correr los siguientes comandos:
 
-> colima status
+```bash
+colima status
 
-> minikube status
+minikube status
 
-> kubectl get nodes
+kubectl get nodes
+```
 
 Si todos responden sin errores, está todo listo para comenzar.
     
@@ -96,7 +99,7 @@ Estas son las credenciales que vamos a usar para ingresar a la UI expuesta en lo
 
 #### Creación
 
-En este punto, nuestro cluster de kunbernetes esta corriendo de forma local, Argo CD esta deployado en ese ambiente y su UI accesible en localhost:8080. Es momento de crear una `Aplicación`.
+En este punto, nuestro cluster de Kubernetes está corriendo de forma local, Argo CD está deployado en ese ambiente y su UI accesible en localhost:8080. Es momento de crear una `Aplicación`.
 
 Las aplicaciones de Argo son la representación de nuestros servicios deployados o por deplyoar y brindan, entre otras cosas, dos piezas centrales de información: la fuente o referencia al estado deseado (nuestro repositorio) y el cluster destino.
 
@@ -105,7 +108,7 @@ Por simplicidad del ejemplo, vamos a hacer una creación manual haciendo uso del
 En este mismo repositorio se encuentra el archivo [nginx-app.yml](./apps/nginx-app.yml). Vamos a aplicar el mismo de esta forma desde el directorio en donde se encuentra (o usando un path relativo):
 
 ```bash
-  kubectl apply -f nginx-app.yaml
+  kubectl apply -f nginx-app.yml
 ```
 
 > **Nota:** La fuente de verdad para esta aplicación se describe bajo los campos`.spec. source.targetRevision` y `.spec.source.repoURL`. Modificarlos de ser necesario.
@@ -118,7 +121,7 @@ Esto va a ser inmediatamente reflejado en la UI de Argo, pero nos vamos a encont
 
 > **Nota:** El estado de una aplicación es igual al estado más severo de cualquiera de sus recursos hijos directos. En este caso la aplicación podría pasar de "Missing" a "Degraded" si k8s cambia el estado de algun recurso por uno erroneo.    
 
-Esto nos esta indicando que algo salio mal, y es una de las mayores virtudes de esta herramienta. Les da, a todos los desarrolladores, una respuesta inmediata del cambio que hicieron y la información suficiente para detectar errores y corregirlos directamente desde el repositorio.
+Una de las mayores virtudes de Argo CD es que nos da retroalimentación inmediata para detectar y corregir errores desde el repositorio.
 
 En este caso, el [configmap.yml](/manifests/nginx/configmap.yml) tiene un valor erroneo en `.metadata.namespace`. El valor correcto es `nginx-demo`, ya que es el namespace donde estamos aplicando nuestro [deployment.yml](/manifests/nginx/deployment.yml) y donde espera encontrar el configmap que este mismo esta intentando utilizar.
 
@@ -128,7 +131,7 @@ El siguiente paso es corregir nuestros manifiestos en el repositorio para que pu
 
 En nuestro fichero [configmap.yml](/manifests/nginx/configmap.yml) modificamos el valor del campo `.metadata.namespace` por el mismo que utilizan los otros recursos de nuestro servicio, `nginx-demo`.
 
-Nuestra Application esta configurada de esta manera:
+Nuestra Application está configurada de esta manera:
 
 ```yaml
 syncPolicy:
@@ -139,7 +142,7 @@ syncPolicy:
 
 Esto le indica a Argo que debe aplicar las sincronizaciones de manera automática en cuanto detecte una divergencia, y no esperar a que algún usuario lo haga mediante un comando o la interfaz gráfica.
 
-Una vez pushiemos los cambios a nuestro repositorio, la sincronización se va a dar luego de unos minutos (este tiempo es modificable) dejando a nuestro servicio listo.
+Una vez hagamos push de los cambios a nuestro repositorio, la sincronización se va a dar luego de unos minutos (este tiempo es modificable) dejando a nuestro servicio listo.
 
 Para corroborar que todo funcione, realizamos un port-forward a nuestro nginx para poder acceder a el desde localhost:
 
