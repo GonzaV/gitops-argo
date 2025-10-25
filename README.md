@@ -156,7 +156,7 @@ Al acceder a localhost:8081 se debería ver el mensaje de bienvenida "Hello from
 
 #### Protección contra cambios manuales
 
-Argo sincroniza nuestros recursos mediante un mecanismo [pull-based](./docs/gitops.md). Esto implica, entre otras cosas, que la herramienta aplica los cambios hechos en el respositorio y también revierte cualquier cambio manual que se realice, velando por mantener el repositorio como SSOT.
+Argo sincroniza nuestros recursos mediante un mecanismo [pull-based](./docs/gitops.md#pull-based). Esto implica, entre otras cosas, que la herramienta aplica los cambios hechos en el respositorio y también revierte cualquier cambio manual que se realice, velando por mantener el repositorio como SSOT.
 
 Para probar esto vamos a editar nuestro mensaje de bienvenida, aplicando el path con kubectl:
 
