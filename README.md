@@ -130,3 +130,35 @@ El siguiente paso es corregir nuestros manifiestos en el repositorio para que pu
 
 En nuestro fichero [configmap.yml](/manifests/nginx/configmap.yml) modificamos el valor del campo `.metadata.namespace` por el mismo que utilizan los otros recursos de nuestro servicio, `nginx-demo`.
 
+Nuestra Application esta configurada de esta manera:
+
+```yaml
+syncPolicy:
+    automated: {
+        selfHeal: true
+    }
+```
+
+Esto le indica a Argo que debe aplicar las sincronizaciones de manera automática en cuanto detecte una divergencia, y no esperar a que algún usuario lo haga mediante un comando o la interfaz gráfica.
+
+Una vez pushiemos los cambios a nuestro repositorio, la sincronización se va a dar luego de unos minutos (este tiempo es modificable) dejando a nuestro servicio listo.
+
+Para corroborar que todo funcione, realizamos un port-forward a nuestro nginx para poder acceder a el desde localhost:
+
+```bash
+kubectl port-forward svc/nginx-service -n nginx-demo 8081:80
+```
+
+Al acceder a localhost:8081 se debería ver el mensaje de bienvenida "Hello from Argo CD Demo!"
+
+#### Protección contra cambios manuales
+
+Argo sincroniza nuestros recursos mediante un mecanismo [pull-based](./docs/gitops.md). Esto implica, entre otras cosas, que la herramienta aplica los cambios hechos en el respositorio y también revierte cualquier cambio manual que se realice, velando por mantener el repositorio como SSOT.
+
+Para probar esto vamos a editar nuestro mensaje de bienvenida, aplicando el path con kubectl:
+
+```bash
+kubectl edit configmap nginx-config -n nginx-demo
+```
+
+Una vez aplicado el cambio, y gracias a la configuracion `selfHeal: true` de nuestra aplicación, Argo va a hacer el rollback de manera casi instantanea. Aunque el cambio sea rápido, la aplicación paso de estar sincronizada, a un sync status "OutOfSync" para luego, gracias al selfHeal, volver a sincronizarse automáticamente con el contenido del cluster.
