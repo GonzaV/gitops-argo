@@ -14,5 +14,9 @@ spec:
     namespace: nginx-demo
   syncPolicy:
     automated: {}
+    #automated: {
+    #  prune: true
+    #  selfHeal: true
+    #}
     syncOptions:
       - CreateNamespace=true
