@@ -53,7 +53,7 @@ Si todos responden sin errores, está todo listo para comenzar.
 
 ### Instalación y preparación de Argo CD
 
-// TODO mejoras: asegurarnos de estar trabajando en el cluster local con kubectl config get-contexts. En "Creación y Sincronización de una Aplicación" se crea manualmente la aplicacion de argo por simplicidad, asegurarse de comentar que hay alternativas, ya que esto tambien requiere permisos que no deberian tener todos los devs.
+> **Nota**: Asegurarse de estrar trabajarno en el context correcto con kubectl config get-contexts
 
 Como primer paso, es necesario crear el namespace `argocd` y aplicar en el los recursos y servicios de Argo.
 
